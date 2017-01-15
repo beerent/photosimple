@@ -8,7 +8,7 @@ class PropertiesManager():
     
     def loadProperties(self):
         self.properties_array = {}
-        with open(os.getcwd() + "/conf/properties.conf") as f:
+        with open("/Users/brentryczak/Documents/photosimple/conf/properties.conf") as f:
             contents = f.readlines()
             for line in contents:
                 if line[0] == "#":
