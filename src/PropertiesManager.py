@@ -1,6 +1,6 @@
 import os
 
-class PropertiesManager(object):
+class PropertiesManager():
 
     def __init__(self):
         self.loadProperties()
