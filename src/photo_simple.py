@@ -21,7 +21,9 @@ arg_parameters = [
                  "-r",
                  "--request",
                  "-d",
-                 "--directory"
+                 "--directory",
+                 "-n",
+                 "--name"
                  ]
 
 
@@ -33,6 +35,7 @@ valid_requests = [
 #request fields
 request = None
 directory = None
+name = None
 verbose = None
 
 #create logger option
@@ -71,7 +74,7 @@ def helpMenu():
 
 def validateArguments():
     global valid_requests, no_arg_parameters, arg_parameters
-    global request, directory
+    global request, directory, name
     
     if request == None:
         return "missing request (-r, --request)"
@@ -82,6 +85,9 @@ def validateArguments():
     
     if (request == "add_destination" or request == "remove_destination") and directory == None:
         return "missing directory (-d, --directory)"
+    
+    if (request == "add_destination" and name == None):
+        logger.warn("no name for destination '%s' provided" % directory)
     
     return None
 
@@ -100,7 +106,7 @@ def parseRequest():
 
     arguments = sys.argv
 
-    global request, directory, verbose
+    global request, directory, name, verbose
     
     i = 1
     while i < len(arguments):
@@ -152,6 +158,13 @@ def parseRequest():
             directory = arg2
             continue
 
+        #name argument
+        elif (arg1 == "--name" or arg1 == "-n") and name == None:
+            arg2 = arguments[i]
+            i = i + 1
+            name = arg2
+            continue
+
         #error in code if we get here
         else:
             log_str = "code error - not accounting for request '%s'" % arg1
@@ -165,14 +178,14 @@ def parseRequest():
 ############################
      
 def handleRequest(database_manager):
-    global request, directory
+    global request, directory, name
     
     directory_manager = DirectoryManager(database_manager)
 
     if request == "add_destination":
-        directory_manager.addDestination(directory)
+        directory_manager.addDestination(name, directory)
     elif request == "remove_destination":
-        directory_manager.removeDestination(directory)
+        directory_manager.removeDestination(name, directory)
     else:
         logger.error("request type '%s' not found in handleRequest()")
         exit(1)

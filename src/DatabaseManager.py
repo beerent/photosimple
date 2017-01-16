@@ -12,12 +12,13 @@ class DatabaseManager():
         self.database = database
         self.logger = Logger()
     
-    def execute(self, sql):
+    def execute(self, sql, vars):
         if not self.isConnected():
             self.connect(True)
             
         cursor = self.db.cursor()
-        cursor.execute(sql)
+        cursor.execute(sql, vars)
+        self.db.commit()
         return cursor.fetchall()
     
     def connect(self, local_call=False):
