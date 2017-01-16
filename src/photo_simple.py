@@ -3,6 +3,7 @@ from PropertiesManager import PropertiesManager
 from DatabaseManager import DatabaseManager
 from Logger import Logger
 import sys
+from __builtin__ import str
 
 
 
@@ -83,8 +84,11 @@ def validateArguments():
         ret_str = "'%s' is an invalid request" % request
         return ret_str
     
-    if (request == "add_destination" or request == "remove_destination") and directory == None:
+    if request == "add_destination" and directory == None:
         return "missing directory (-d, --directory)"
+    
+    if request == "remove_destination" and directory == None and name == None:
+        return "missing directory or name (-d, --directory, -n, --name)"
     
     if (request == "add_destination" and name == None):
         logger.warn("no name for destination '%s' provided" % directory)
@@ -93,7 +97,10 @@ def validateArguments():
 
 
 
-
+#def checkQuitQuotationCase(str):
+#    if str[0] == '\"':
+#        logger.error("quotations are not yet supported (keyword = '%s')" % str)
+#        exit(1)
 
 ############################
 # PARSE REQUEST

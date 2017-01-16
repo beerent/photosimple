@@ -8,10 +8,14 @@ class DirectoryManager():
     def __init__(self, database_manager):
         self.logger = Logger()
         self.directory_dao = DirectoryDAO(database_manager)
-        print self.directory_dao
 
     def addDestination(self, name, directory):
-        self.logger.log("attempting to add destination: %s" % directory)
+        log_msg = "attempting to add destination '%s' with name '%s'" % (directory, name)
+        if name == None:
+            name = directory
+            log_msg = "attempting to add destination '%s' with default name '%s'" % (directory, name)
+            
+        self.logger.log(log_msg)
 
         #debug
         dir_exists = self.directoryExists(directory)
@@ -40,15 +44,36 @@ class DirectoryManager():
         self.directory_dao.addDestination(name, directory)
         self.logger.log("destination '%s' successfully added." % directory)
         
-        return None
     
     def removeDestination(self, name, directory):
-        self.logger.log("attempting to remove destination: %s" % directory)
-        
-        #check if exists in database, if not err out
+        if directory != None and name != None:
+            self.logger.log("attempting to remove destination with directory '%s' and name '%s'" % (directory, name))
+            fail_string = "cannot remove destination: destination with directory '%s' and name '%s' does not exist." % (directory, name)
+            debug_string = "destination with directory '%s' and name '%s' does exist." % (directory, name)
 
-        #if exists, remove
-        return None
+        elif directory != None and name == None:
+            self.logger.log("attempting to remove destination with directory '%s'" % directory)
+            fail_string = "cannot remove destination: destination with directory '%s' does not exist." % (directory)
+            debug_string = "destination with directory '%s' does exist." % (directory)
+
+        elif directory == None and name != None:
+            self.logger.log("attempting to remove destination with name '%s'" % name)
+            fail_string = "cannot remove destination: destination with name '%s' does not exist." % (name)
+            debug_string = "destination with name '%s' does exist." % (name)
+
+        else:
+            self.logger.error("cannot remove destination: name and directory both None.")
+            exit(1)
+            
+        destination = self.directory_dao.getDestination(directory, name)        
+        if destination == None:
+            self.logger.error(fail_string)
+            exit(1)
+        
+        #destination does exist
+        self.directory_dao.removeDestination(name, directory)
+        self.logger.log("destination '%s' successfully removed." % directory)
+            
     
     def directoryExists(self, directory):
         return os.path.isdir(directory)

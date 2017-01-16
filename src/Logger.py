@@ -26,29 +26,33 @@ class Logger(object):
         return self.verbose
     
     def debug(self, log):
+        string = "%s [debug] %s" % (self.getDateTime(), log)
         if self.isVerbose():
-            string = "%s [debug] %s" % (self.getDateTime(), log)
-            self.executeLog(string)
+            self.printLog(log)
+        self.storeLog(string)
     
     def log(self, log):
         string = "%s [log]   %s" % (self.getDateTime(), log)
         #if self.isVerbose():
-        self.executeLog(string)
+        self.printLog(log)
+        self.storeLog(string)
     
     def warn(self, log):
         string = "%s [warn]  %s" % (self.getDateTime(), log)
         #if self.isVerbose():
-        self.executeLog(string)
+        self.printLog(log)
+        self.storeLog(string)
     
     def error(self, log):
         string = "%s [error] %s" % (self.getDateTime(), log)
         #if self.isVerbose():
-        self.executeLog(string)
+        self.printLog(log)
+        self.storeLog(string)
         
-    def executeLog(self, string):
-        
+    def printLog(self, string):
         print string
         
+    def storeLog(self, string):
         log_directory = self.log_directory + "/photosimple.log"
         with open(log_directory, "a") as log_file:
             log_file.write("%s\n" % string)
