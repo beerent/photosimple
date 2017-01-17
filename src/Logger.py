@@ -28,25 +28,25 @@ class Logger(object):
     def debug(self, log):
         string = "%s [debug] %s" % (self.getDateTime(), log)
         if self.isVerbose():
-            self.printLog(log)
+            self.printLog(string)
         self.storeLog(string)
     
     def log(self, log):
         string = "%s [log]   %s" % (self.getDateTime(), log)
         #if self.isVerbose():
-        self.printLog(log)
+        self.printLog(string)
         self.storeLog(string)
     
     def warn(self, log):
         string = "%s [warn]  %s" % (self.getDateTime(), log)
         #if self.isVerbose():
-        self.printLog(log)
+        self.printLog(string)
         self.storeLog(string)
     
     def error(self, log):
         string = "%s [error] %s" % (self.getDateTime(), log)
         #if self.isVerbose():
-        self.printLog(log)
+        self.printLog(string)
         self.storeLog(string)
         
     def printLog(self, string):

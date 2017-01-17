@@ -8,70 +8,73 @@ class DirectoryManager():
     def __init__(self, database_manager):
         self.logger = Logger()
         self.directory_dao = DirectoryDAO(database_manager)
-
-    def addDestination(self, name, directory):
-        log_msg = "attempting to add destination '%s' with name '%s'" % (directory, name)
+        
+        
+        
+    
+    def addDirectory(self, type, name, directory):
+        log_msg = "attempting to add %s '%s' with name '%s'" % (type.getDirectoryType(), directory, name)
         if name == None:
             name = directory
-            log_msg = "attempting to add destination '%s' with default name '%s'" % (directory, name)
+            log_msg = "attempting to add %s '%s' with default name '%s'" % (type.getDirectoryType(), directory, name)
             
-        self.logger.log(log_msg)
+        self.logger.log(log_msg)     
 
         #debug
         dir_exists = self.directoryExists(directory)
         debug_str = "directory '%s' exists: %s" % (directory, str(dir_exists)) 
-        self.logger.debug(debug_str)
+        self.logger.debug(debug_str)  
         
         #check if directory exists before proceeding
         if not dir_exists:
             err_str = "directory '%s' is invalid or does not exist" % directory
             self.logger.error(err_str)
             exit(1)
-            
-        #check if already exists in database by name, if so quit
-        destination = self.directory_dao.getDestinationByName(name)
-        if destination != None:
-            self.logger.error("destination name '%s' already exists. Cannot continue." % name)
-            return
 
-        #check if already exists in database, if so warn
-        destination = self.directory_dao.getDestinationByDirectory(directory)
-        if destination != None:
-            self.logger.warn("destination '%s' already exists. Doing nothing." % directory)
+        directory_path = self.directory_dao.getDirectoryByName(type.getDirectoryType(), name)
+        if directory_path != None:
+            self.logger.error("%s name '%s' already exists. Cannot continue." % (type.getDirectoryType(), name))
             return
-        self.logger.debug("destination '%s' is valid and not in database" % directory)
         
-        self.directory_dao.addDestination(name, directory)
-        self.logger.log("destination '%s' successfully added." % directory)
+        #check if already exists in database, if so warn
+        directory_path = self.directory_dao.getDirectoryByDirectory(type.getDirectoryType(), directory)
+        if directory_path != None:
+            self.logger.warn("%s '%s' already exists. Doing nothing." % (type.getDirectoryType(), directory))
+            return
+        self.logger.debug("%s '%s' is valid and not in database" % (type.getDirectoryType(), directory))
         
+        self.directory_dao.addDirectory(type.getDirectoryType(), name, directory)
+        self.logger.log("%s '%s' successfully added." % (type.getDirectoryType(), directory))
+
+
     
-    def removeDestination(self, name, directory):
+    def removeDirectory(self, type, name, directory):
         if directory != None and name != None:
-            self.logger.log("attempting to remove destination with directory '%s' and name '%s'" % (directory, name))
-            fail_string = "cannot remove destination: destination with directory '%s' and name '%s' does not exist." % (directory, name)
-            debug_string = "destination with directory '%s' and name '%s' does exist." % (directory, name)
+            self.logger.log("attempting to remove %s with directory '%s' and name '%s'" % (type.getDirectoryType(), directory, name))
+            fail_string = "cannot remove %s: directory '%s' and name '%s' does not exist." % (type.getDirectoryType(), directory, name)
+            debug_string = "%s with directory '%s' with name '%s' does exist." % (type.getDirectoryType(), directory, name)
 
         elif directory != None and name == None:
-            self.logger.log("attempting to remove destination with directory '%s'" % directory)
-            fail_string = "cannot remove destination: destination with directory '%s' does not exist." % (directory)
-            debug_string = "destination with directory '%s' does exist." % (directory)
+            self.logger.log("attempting to remove %s with directory '%s'" % (type.getDirectoryType(), directory))
+            fail_string = "cannot remove %s: directory '%s' does not exist." % (type.getDirectoryType(), directory)
+            debug_string = "%s with directory '%s' does exist." % (type.getDirectoryType(), directory)
 
         elif directory == None and name != None:
-            self.logger.log("attempting to remove destination with name '%s'" % name)
-            fail_string = "cannot remove destination: destination with name '%s' does not exist." % (name)
-            debug_string = "destination with name '%s' does exist." % (name)
+            self.logger.log("attempting to remove %s with name '%s'" % (type.getDirectoryType(), name))
+            fail_string = "cannot remove %s: name '%s' does not exist." % (type.getDirectoryType(), name)
+            debug_string = "%s with name '%s' does exist." % (type.getDirectoryType(), name)
 
         else:
-            self.logger.error("cannot remove destination: name and directory both None.")
+            self.logger.error("cannot remove %s: name and directory are both None." % type.getDirectoryType())
             exit(1)
             
-        destination = self.directory_dao.getDestination(directory, name)        
-        if destination == None:
+        directory_path = self.directory_dao.getDirectory(type.getDirectoryType(), name, directory)        
+        if directory_path == None:
             self.logger.error(fail_string)
             exit(1)
         
         #destination does exist
-        self.directory_dao.removeDestination(name, directory)
+        self.directory_dao.removeDirectory(type.getDirectoryType(), name, directory)
         self.logger.log("destination '%s' successfully removed." % directory)
             
     

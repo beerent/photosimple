@@ -1,95 +1,91 @@
-from Destination import Destination
+from Directory import Directory
 
 class DirectoryDAO(object):
     
     def __init__(self, database_manager):
         self.database_manager = database_manager
         
-        
-        
-        
-        
     ################################
-    # Get Destination
+    # Get Directory
     ################################
     
-    def getDestination(self, name, directory):
+    def getDirectory(self, type, name, directory):
         if name != None and directory != None:
-            return self.getDestinationByDirectoryAndName(directory, name)
+            return self.getDirectoryByDirectoryAndName(type, directory, name)
         elif name == None and directory != None:
-            return self.getDestinationByDirectory(directory)
+            return self.getDirectoryByDirectory(type, directory)
         elif name != None and directory == None:
-            return self.getDestinationByName(name)
+            return self.getDirectoryByName(type, name)
         
-    def getDestinationByName(self, name):
-        sql = "select * from directories where directory_name = %s and active = '1'"
-        vars = (name,)
+    def getDirectoryByName(self, type, name):
+        sql = "select * from directories where directory_type = %s and directory_name = %s and active = '1'"
+        vars = (type, name)
         res = self.database_manager.execute(sql, vars)
         if len(res) == 0:
             return None
         res = res[0]
-        return Destination(res[0], res[1], res[2], res[3])
+        return Directory(res[0], res[1], res[2], res[3])
     
-    def getDestinationByDirectory(self, directory):
-        sql = "select * from directories where directory_path = %s and active = '1'"
-        vars = (directory,)
+    def getDirectoryByDirectory(self, type, directory):
+        sql = "select * from directories where directory_type = %s and directory_path = %s and active = '1'"
+        vars = (type, directory)
         res = self.database_manager.execute(sql, vars)
         if len(res) == 0:
             return None
         res = res[0]
-        return Destination(res[0], res[1], res[2], res[3])
+        return Directory(res[0], res[1], res[2], res[3])
     
-    def getDestinationByDirectoryAndName(self, directory, name):
-        sql = "select * from directories where directory_path = %s and directory_name = %s and active = '1'"
-        vars = (directory, name)
+    def getDirectoryByDirectoryAndName(self, type, directory, name):
+        sql = "select * from directories where directory_type = %s and directory_path = %s and directory_name = %s and active = '1'"
+        vars = (type, directory, name)
         res = self.database_manager.execute(sql, vars)
         if len(res) == 0:
             return None
         res = res[0]
-        return Destination(res[0], res[1], res[2], res[3])
+        return Directory(res[0], res[1], res[2], res[3])
     
     
     
     
     
     ################################
-    # Remove Destination
+    # Remove Directory
     ################################
     
-    def removeDestination(self, name, directory):
+    def removeDirectory(self, type, name, directory):
         if name != None and directory != None:
-            return self.removeDestinationByDirectoryAndName(directory, name)
+            return self.removeDirectoryByDirectoryAndName(type, directory, name)
         elif name == None and directory != None:
-            return self.removeDestinationByDirectory(directory)
+            return self.removeDirectoryByDirectory(type, directory)
         elif name != None and directory == None:
-            return self.removeDestinationByName(name)
+            return self.removeDirectoryByName(type, name)
         
-    def removeDestinationByName(self, name):
-        sql = "update directories set active = '0' where directory_name = %s and active = '1'"
-        vars = (name,)
+    def removeDirectoryByName(self, type, name):
+        sql = "update directories set active = '0' where directory_type = %s and directory_name = %s and active = '1'"
+        vars = (type, name)
         res = self.database_manager.execute(sql, vars)
         if len(res) == 0:
             return None
         res = res[0]
-        return Destination(res[0], res[1], res[2], res[3])
+        return Directory(res[0], res[1], res[2], res[3])
     
-    def removeDestinationByDirectory(self, directory):
-        sql = "update directories set active = '0' where directory_path = %s and active = '1'"
-        vars = (directory,)
+    def removeDirectoryByDirectory(self, type, directory):
+        sql = "update directories set active = '0' where directory_type = %s and directory_path = %s and active = '1'"
+        vars = (type, directory)
         res = self.database_manager.execute(sql, vars)
         if len(res) == 0:
             return None
         res = res[0]
-        return Destination(res[0], res[1], res[2], res[3])
+        return Directory(res[0], res[1], res[2], res[3])
     
-    def removeDestinationByDirectoryAndName(self, directory, name):
-        sql = "update directories set active = '0' where directory_path = %s and directory_name = %s and active = '1'"
-        vars = (directory, name)
+    def removeDirectoryByDirectoryAndName(self, type, directory, name):
+        sql = "update directories set active = '0' where directory_type = %s and directory_path = %s and directory_name = %s and active = '1'"
+        vars = (type, directory, name)
         res = self.database_manager.execute(sql, vars)
         if len(res) == 0:
             return None
         res = res[0]
-        return Destination(res[0], res[1], res[2], res[3]) 
+        return Directory(res[0], res[1], res[2], res[3]) 
     
     
     
@@ -99,12 +95,12 @@ class DirectoryDAO(object):
     
     
     ################################
-    # Add Destination
+    # Add Directory
     ################################
     
-    def addDestination(self, name, destination):
-        sql = "insert into directories (directory_name, directory_path, directory_type) "
+    def addDirectory(self, type, name, directory):
+        sql = "insert into directories (directory_type, directory_name, directory_path) "
         sql += "values (%s, %s, %s) on duplicate key update active = '1', directory_name = %s"
-        vars = (name, destination, "DESTINATION", name)
+        vars = (type, name, directory, name)
         result = self.database_manager.execute(sql, vars)
         

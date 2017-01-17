@@ -1,6 +1,7 @@
 from DirectoryManager import DirectoryManager
 from PropertiesManager import PropertiesManager
 from DatabaseManager import DatabaseManager
+from DirectoryType import DirectoryType
 from Logger import Logger
 import sys
 from __builtin__ import str
@@ -30,7 +31,9 @@ arg_parameters = [
 
 valid_requests = [
                   "add_destination",
-                  "remove_destination"
+                  "remove_destination",
+                  "add_source",
+                  "remove_source"
                   ]
 
 #request fields
@@ -62,7 +65,9 @@ logger = Logger()
 def helpMenu():
     ret_str =    "--verbose   (-v) verbose mode"
     ret_str += "\n--request   (-r) <request>"
+    ret_str += "\n--source    (-s) <directory>"
     ret_str += "\n--directory (-d) <directory>"
+    ret_str += "\n--name      (-n) <directory>"
     return ret_str
 
 
@@ -77,20 +82,23 @@ def validateArguments():
     global valid_requests, no_arg_parameters, arg_parameters
     global request, directory, name
     
+    #request flag is missing
     if request == None:
         return "missing request (-r, --request)"
     
+    #request flag is not valid
     if request not in valid_requests:
         ret_str = "'%s' is an invalid request" % request
         return ret_str
     
-    if request == "add_destination" and directory == None:
+    
+    if request in("add_destination", "add_source") and directory == None:
         return "missing directory (-d, --directory)"
     
-    if request == "remove_destination" and directory == None and name == None:
+    if request in ("remove_destination", "remove_source") and directory == None and name == None:
         return "missing directory or name (-d, --directory, -n, --name)"
     
-    if (request == "add_destination" and name == None):
+    if (request in ("add_destination", "add_source") and name == None):
         logger.warn("no name for destination '%s' provided" % directory)
     
     return None
@@ -188,13 +196,17 @@ def handleRequest(database_manager):
     global request, directory, name
     
     directory_manager = DirectoryManager(database_manager)
-
     if request == "add_destination":
-        directory_manager.addDestination(name, directory)
+        directory_manager.addDirectory(DirectoryType("DESTINATION"), name, directory)
     elif request == "remove_destination":
-        directory_manager.removeDestination(name, directory)
+        directory_manager.removeDirectory(DirectoryType("DESTINATION"), name, directory)
+    
+    elif request == "add_source":
+        directory_manager.addDirectory(DirectoryType("SOURCE"), name, directory)
+    elif request == "remove_source":
+        directory_manager.removeDirectory(DirectoryType("SOURCE"), name, directory)
     else:
-        logger.error("request type '%s' not found in handleRequest()")
+        logger.error("request type '%s' not found in handleRequest()" % request)
         exit(1)
 
     

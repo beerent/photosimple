@@ -1,4 +1,4 @@
-class Destination(object):
+class Directory(object):
     directory_id = -1
     directory_path = None
     directory_type = None
