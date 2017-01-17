@@ -11,9 +11,9 @@ class DirectoryDAO(object):
     
     def getDirectory(self, type, name, directory):
         if name != None and directory != None:
-            return self.getDirectoryByDirectoryAndName(type, directory, name)
+            return self.getDirectoryByPathAndName(type, directory, name)
         elif name == None and directory != None:
-            return self.getDirectoryByDirectory(type, directory)
+            return self.getDirectoryByPath(type, directory)
         elif name != None and directory == None:
             return self.getDirectoryByName(type, name)
         
@@ -26,7 +26,7 @@ class DirectoryDAO(object):
         res = res[0]
         return Directory(res[0], res[1], res[2], res[3])
     
-    def getDirectoryByDirectory(self, type, directory):
+    def getDirectoryByPath(self, type, directory):
         sql = "select * from directories where directory_type = %s and directory_path = %s and active = '1'"
         vars = (type, directory)
         res = self.database_manager.execute(sql, vars)
@@ -35,7 +35,7 @@ class DirectoryDAO(object):
         res = res[0]
         return Directory(res[0], res[1], res[2], res[3])
     
-    def getDirectoryByDirectoryAndName(self, type, directory, name):
+    def getDirectoryByPathAndName(self, type, directory, name):
         sql = "select * from directories where directory_type = %s and directory_path = %s and directory_name = %s and active = '1'"
         vars = (type, directory, name)
         res = self.database_manager.execute(sql, vars)
@@ -43,6 +43,14 @@ class DirectoryDAO(object):
             return None
         res = res[0]
         return Directory(res[0], res[1], res[2], res[3])
+    
+    def getDirectories(self, type):
+        sql = "select * from directories where directory_type = %s and active = '1'"
+        vars = (type,)
+        res = self.database_manager.execute(sql, vars)
+        if len(res) == 0:
+            return None
+        return res
     
     
     
@@ -54,9 +62,9 @@ class DirectoryDAO(object):
     
     def removeDirectory(self, type, name, directory):
         if name != None and directory != None:
-            return self.removeDirectoryByDirectoryAndName(type, directory, name)
+            return self.removeDirectoryByPathAndName(type, directory, name)
         elif name == None and directory != None:
-            return self.removeDirectoryByDirectory(type, directory)
+            return self.removeDirectoryByPath(type, directory)
         elif name != None and directory == None:
             return self.removeDirectoryByName(type, name)
         
@@ -69,7 +77,7 @@ class DirectoryDAO(object):
         res = res[0]
         return Directory(res[0], res[1], res[2], res[3])
     
-    def removeDirectoryByDirectory(self, type, directory):
+    def removeDirectoryByPath(self, type, directory):
         sql = "update directories set active = '0' where directory_type = %s and directory_path = %s and active = '1'"
         vars = (type, directory)
         res = self.database_manager.execute(sql, vars)
@@ -78,7 +86,7 @@ class DirectoryDAO(object):
         res = res[0]
         return Directory(res[0], res[1], res[2], res[3])
     
-    def removeDirectoryByDirectoryAndName(self, type, directory, name):
+    def removeDirectoryByPathAndName(self, type, directory, name):
         sql = "update directories set active = '0' where directory_type = %s and directory_path = %s and directory_name = %s and active = '1'"
         vars = (type, directory, name)
         res = self.database_manager.execute(sql, vars)

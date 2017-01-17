@@ -1,5 +1,6 @@
 from Logger import Logger
 from DirectoryDAO import DirectoryDAO
+from Directory import Directory
 import os
 
 class DirectoryManager():
@@ -11,7 +12,9 @@ class DirectoryManager():
         
         
         
-    
+    ##########################
+    # ADD DIRECTORY
+    ##########################
     def addDirectory(self, type, name, directory):
         log_msg = "attempting to add %s '%s' with name '%s'" % (type.getDirectoryType(), directory, name)
         if name == None:
@@ -37,7 +40,7 @@ class DirectoryManager():
             return
         
         #check if already exists in database, if so warn
-        directory_path = self.directory_dao.getDirectoryByDirectory(type.getDirectoryType(), directory)
+        directory_path = self.directory_dao.getDirectoryByPath(type.getDirectoryType(), directory)
         if directory_path != None:
             self.logger.warn("%s '%s' already exists. Doing nothing." % (type.getDirectoryType(), directory))
             return
@@ -47,22 +50,26 @@ class DirectoryManager():
         self.logger.log("%s '%s' successfully added." % (type.getDirectoryType(), directory))
 
 
-    
+
+
+    ##########################
+    # REMOVE DIRECTORY
+    ##########################  
     def removeDirectory(self, type, name, directory):
         if directory != None and name != None:
             self.logger.log("attempting to remove %s with directory '%s' and name '%s'" % (type.getDirectoryType(), directory, name))
             fail_string = "cannot remove %s: directory '%s' and name '%s' does not exist." % (type.getDirectoryType(), directory, name)
-            debug_string = "%s with directory '%s' with name '%s' does exist." % (type.getDirectoryType(), directory, name)
+            debug_string = "removeDirectory(): %s with directory '%s' with name '%s' does exist." % (type.getDirectoryType(), directory, name)
 
         elif directory != None and name == None:
             self.logger.log("attempting to remove %s with directory '%s'" % (type.getDirectoryType(), directory))
             fail_string = "cannot remove %s: directory '%s' does not exist." % (type.getDirectoryType(), directory)
-            debug_string = "%s with directory '%s' does exist." % (type.getDirectoryType(), directory)
+            debug_string = "removeDirectory(): %s with directory '%s' does exist." % (type.getDirectoryType(), directory)
 
         elif directory == None and name != None:
             self.logger.log("attempting to remove %s with name '%s'" % (type.getDirectoryType(), name))
             fail_string = "cannot remove %s: name '%s' does not exist." % (type.getDirectoryType(), name)
-            debug_string = "%s with name '%s' does exist." % (type.getDirectoryType(), name)
+            debug_string = "removeDirectory(): %s with name '%s' does exist." % (type.getDirectoryType(), name)
 
         else:
             self.logger.error("cannot remove %s: name and directory are both None." % type.getDirectoryType())
@@ -75,8 +82,83 @@ class DirectoryManager():
         
         #destination does exist
         self.directory_dao.removeDirectory(type.getDirectoryType(), name, directory)
-        self.logger.log("destination '%s' successfully removed." % directory)
+        self.logger.log("%s directory '%s' successfully removed." % (type.getDirectoryType(), directory))
+    
+    
+    
+    
+        
+    ##########################
+    # GET DIRECTORY
+    ##########################
+    def getDirectories(self, type, name, directory):
+        if directory != None and name != None:
+            self.logger.log("attempting to get %s with directory '%s' and name '%s'" % (type.getDirectoryType(), directory, name))
+            fail_string = "cannot get %s: directory '%s' and name '%s' does not exist." % (type.getDirectoryType(), directory, name)
+            success_string = "successfully found %s directory with name '%s' and path '%s'" % () (type.getDirectoryType(), directory, name)
+            debug_string = "getDirectory(): %s with directory '%s' with name '%s' does exist." % (type.getDirectoryType(), directory, name)
+
+        elif directory != None and name == None:
+            self.logger.log("attempting to get %s with directory '%s'" % (type.getDirectoryType(), directory))
+            fail_string = "cannot get %s: directory '%s' does not exist." % (type.getDirectoryType(), directory)
+            success_string = "successfully found %s directory with path '%s'" % () (type.getDirectoryType(), directory)
+            debug_string = "getDirectory(): %s with directory '%s' does exist." % (type.getDirectoryType(), directory)
+
+        elif directory == None and name != None:
+            self.logger.log("attempting to get %s with name '%s'" % (type.getDirectoryType(), name))
+            fail_string = "cannot get %s: name '%s' does not exist." % (type.getDirectoryType(), name)
+            success_string = "successfully found %s directory with name '%s'" % () (type.getDirectoryType(), name)
+            debug_string = "getDirectory(): %s with name '%s' does exist." % (type.getDirectoryType(), name)
+
+        else:
+            self.logger.error("cannot get %s: name and directory are both None." % type.getDirectoryType())
+            exit(1)
             
+        directory_obj = self.directory_dao.getDirectory(type.getDirectoryType(), name, directory)        
+        if directory_obj == None:
+            self.logger.error(fail_string)
+            exit(1)
+        
+        self.logger.debug(success_string)
+        #destination does exist
+        
+        dir = Directory(directory_obj[0], directory_obj[1], directory_obj[2], directory_obj[3])
+        self.logger.debug("directory found: %s" % str(dir))
+        return dir
+        
+        
+        
+        
+    ##########################
+    # GET DIRECTORIES
+    ##########################
+    def getDirectories(self, type):
+        self.logger.log("attempting to get all %s directories" % type.getDirectoryType())
+            
+        directory_objs = self.directory_dao.getDirectories(type.getDirectoryType())        
+        if directory_objs == None:
+            self.logger.error("no %s directories found." % type.getDirectoryType())
+            exit(1)
+        
+        #destination does exist
+        self.logger.log("%s directories successfully found." % type.getDirectoryType())
+        
+        directories = []
+        for directory_obj in directory_objs:
+            directories.append(Directory(directory_obj[0], directory_obj[1], directory_obj[2], directory_obj[3]))
+        
+        self.logger.debug("%s directories found: %s" % (type.getDirectoryType(), str(directories)))
+
+        return directories
+    
+    
+    
+    
+    
+    
+    
+    def getDirectoryObject(self, database_obj):
+        return Directory()
     
     def directoryExists(self, directory):
         return os.path.isdir(directory)

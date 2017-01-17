@@ -2,9 +2,9 @@ from DirectoryManager import DirectoryManager
 from PropertiesManager import PropertiesManager
 from DatabaseManager import DatabaseManager
 from DirectoryType import DirectoryType
+from BackupManager import BackupManager
 from Logger import Logger
 import sys
-from __builtin__ import str
 
 
 
@@ -20,12 +20,10 @@ no_arg_parameters = [
                     ]
 
 arg_parameters = [
-                 "-r",
-                 "--request",
-                 "-d",
-                 "--directory",
-                 "-n",
-                 "--name"
+                 "-r", "--request",
+                 "-d", "--directory",
+                 "-n", "--name",
+                 "-t", "--tag"
                  ]
 
 
@@ -33,14 +31,15 @@ valid_requests = [
                   "add_destination",
                   "remove_destination",
                   "add_source",
-                  "remove_source"
+                  "remove_source",
+                  "backup"
                   ]
 
 #request fields
 request = None
 directory = None
 name = None
-verbose = None
+tag = None
 
 #create logger option
 logger = Logger()
@@ -64,7 +63,7 @@ logger = Logger()
   
 def helpMenu():
     ret_str =    "--verbose   (-v) verbose mode"
-    ret_str += "\n--request   (-r) <request>"
+    ret_str += "\n--request   (-r) <request> "
     ret_str += "\n--source    (-s) <directory>"
     ret_str += "\n--directory (-d) <directory>"
     ret_str += "\n--name      (-n) <directory>"
@@ -105,10 +104,6 @@ def validateArguments():
 
 
 
-#def checkQuitQuotationCase(str):
-#    if str[0] == '\"':
-#        logger.error("quotations are not yet supported (keyword = '%s')" % str)
-#        exit(1)
 
 ############################
 # PARSE REQUEST
@@ -120,8 +115,9 @@ def parseRequest():
         exit(1)
 
     arguments = sys.argv
+    verbose = False
 
-    global request, directory, name, verbose
+    global request, directory, name, tag
     
     i = 1
     while i < len(arguments):
@@ -179,6 +175,13 @@ def parseRequest():
             i = i + 1
             name = arg2
             continue
+        
+        #tag argument
+        elif (arg1 == "--tag" or arg1 == "-t") and tag == None:
+            arg2 = arguments[i]
+            i = i + 1
+            tag = arg2
+            continue
 
         #error in code if we get here
         else:
@@ -193,9 +196,10 @@ def parseRequest():
 ############################
      
 def handleRequest(database_manager):
-    global request, directory, name
+    global request, directory, name, tags
     
     directory_manager = DirectoryManager(database_manager)
+    backup_manager = BackupManager(database_manager)
     if request == "add_destination":
         directory_manager.addDirectory(DirectoryType("DESTINATION"), name, directory)
     elif request == "remove_destination":
@@ -205,6 +209,9 @@ def handleRequest(database_manager):
         directory_manager.addDirectory(DirectoryType("SOURCE"), name, directory)
     elif request == "remove_source":
         directory_manager.removeDirectory(DirectoryType("SOURCE"), name, directory)
+        
+    elif request == "backup":
+        backup_manager.backupPhotos()
     else:
         logger.error("request type '%s' not found in handleRequest()" % request)
         exit(1)
@@ -230,7 +237,7 @@ def getDatabaseManager():
 
 
 ###############################################################################
-# MAIN REQUEST
+# MAIN
 
 parseRequest()
 

@@ -22,3 +22,7 @@ class Directory(object):
     
     def getDirectoryType(self):
         return self.directory_type
+    
+    def __str__(self):
+        ret_str = "[%s | %s | %s | %s]" % (str(self.directory_id), self.directory_name, self.directory_path, self.directory_type)
+        return ret_str

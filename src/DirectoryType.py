@@ -1,4 +1,3 @@
-from test.test_decimal import directory
 class DirectoryType(object):
     directory_type = None
     
