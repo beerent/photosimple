@@ -9,6 +9,8 @@ class BackupManager(object):
             
     def backupPhotos(self):
         #for every source, backup to every destination
-        type = DirectoryType("SOURCE")
-        self.directory_manager.getDirectories(type)
+        source_directories = self.directory_manager.getDirectories(DirectoryType("SOURCE"))
+        destination_directories = self.directory_manager.getDirectories(DirectoryType("DESTINATION"))
+        
+        
         return None

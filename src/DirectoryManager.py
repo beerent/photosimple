@@ -147,15 +147,17 @@ class DirectoryManager():
         for directory_obj in directory_objs:
             directories.append(Directory(directory_obj[0], directory_obj[1], directory_obj[2], directory_obj[3]))
         
-        self.logger.debug("%s directories found: %s" % (type.getDirectoryType(), str(directories)))
+        self.logger.debug("%s directories found: %s" % (type.getDirectoryType(), self.directoriesToString(directories)))
 
         return directories
     
     
     
-    
-    
-    
+    def directoriesToString(self, directories):
+        ret_str = ""
+        for directory in directories:
+            ret_str = ret_str + "\n" + str(directory) 
+        return ret_str
     
     def getDirectoryObject(self, database_obj):
         return Directory()
