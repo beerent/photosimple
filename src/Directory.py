@@ -11,7 +11,7 @@ class Directory(object):
         self.directory_path = directory_path
         self.directory_type = directory_type
          
-    def getDirectoryId():
+    def getDirectoryId(self):
         return self.directory_id
         
     def getDirectoryName(self):

@@ -1,5 +1,6 @@
 from DirectoryManager import DirectoryManager
 from DirectoryType import DirectoryType
+from FileManager import FileManager
 from Logger import Logger
 
 class BackupManager(object):
@@ -7,6 +8,7 @@ class BackupManager(object):
     def __init__(self, database_manager):
         self.database_manager = database_manager
         self.directory_manager = DirectoryManager(database_manager)
+        self.file_manager = FileManager()
         self.logger = Logger()
             
     def backupPhotos(self):
@@ -34,5 +36,6 @@ class BackupManager(object):
             present_destination_directories.append(source_path)
         
         for source in present_source_directories:
-           
+            files = self.file_manager.getFiles(source)
+        
         return None
