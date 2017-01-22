@@ -24,7 +24,7 @@ class DirectoryDAO(object):
         if len(res) == 0:
             return None
         res = res[0]
-        return Directory(res[0], res[1], res[2], res[3])
+        return Directory(res[0], res[1], res[2], res[3], res[4])
     
     def getDirectoryByPath(self, type, directory):
         sql = "select * from directories where directory_type = %s and directory_path = %s and active = '1'"
@@ -33,7 +33,7 @@ class DirectoryDAO(object):
         if len(res) == 0:
             return None
         res = res[0]
-        return Directory(res[0], res[1], res[2], res[3])
+        return Directory(res[0], res[1], res[2], res[3], res[4])
     
     def getDirectoryByPathAndName(self, type, directory, name):
         sql = "select * from directories where directory_type = %s and directory_path = %s and directory_name = %s and active = '1'"
@@ -42,7 +42,7 @@ class DirectoryDAO(object):
         if len(res) == 0:
             return None
         res = res[0]
-        return Directory(res[0], res[1], res[2], res[3])
+        return Directory(res[0], res[1], res[2], res[3], res[4])
     
     def getDirectories(self, type):
         sql = "select * from directories where directory_type = %s and active = '1'"
@@ -75,7 +75,7 @@ class DirectoryDAO(object):
         if len(res) == 0:
             return None
         res = res[0]
-        return Directory(res[0], res[1], res[2], res[3])
+        return Directory(res[0], res[1], res[2], res[3], res[4])
     
     def removeDirectoryByPath(self, type, directory):
         sql = "update directories set active = '0' where directory_type = %s and directory_path = %s and active = '1'"
@@ -84,7 +84,7 @@ class DirectoryDAO(object):
         if len(res) == 0:
             return None
         res = res[0]
-        return Directory(res[0], res[1], res[2], res[3])
+        return Directory(res[0], res[1], res[2], res[3], res[4])
     
     def removeDirectoryByPathAndName(self, type, directory, name):
         sql = "update directories set active = '0' where directory_type = %s and directory_path = %s and directory_name = %s and active = '1'"
@@ -93,7 +93,7 @@ class DirectoryDAO(object):
         if len(res) == 0:
             return None
         res = res[0]
-        return Directory(res[0], res[1], res[2], res[3]) 
+        return Directory(res[0], res[1], res[2], res[3], res[4]) 
     
     
     

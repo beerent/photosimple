@@ -122,7 +122,7 @@ class DirectoryManager():
         self.logger.debug(success_string)
         #destination does exist
         
-        dir = Directory(directory_obj[0], directory_obj[1], directory_obj[2], directory_obj[3])
+        dir = Directory(directory_obj[0], directory_obj[1], directory_obj[2], directory_obj[3], directory_obj[4])
         self.logger.debug("directory found: %s" % str(dir))
         return dir
         
@@ -145,8 +145,11 @@ class DirectoryManager():
         
         directories = []
         for directory_obj in directory_objs:
-            directories.append(Directory(directory_obj[0], directory_obj[1], directory_obj[2], directory_obj[3]))
+            directories.append(Directory(directory_obj[0], directory_obj[1], directory_obj[2], directory_obj[3], directory_obj[4]))
         
+        for directory in directories:
+            self.logger.log("%s: %s" % (type.getDirectoryType(), directory.getDirectoryPath()))
+            
         self.logger.debug("%s directories found: %s" % (type.getDirectoryType(), self.directoriesToString(directories)))
 
         return directories
