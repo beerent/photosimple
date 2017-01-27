@@ -19,6 +19,9 @@ class DatabaseManager():
         cursor = self.db.cursor()
         cursor.execute(sql, vars)
         self.db.commit()
+        
+        if "insert" == sql.split(" ")[0]:
+            return cursor.lastrowid
         return cursor.fetchall()
     
     def connect(self, local_call=False):
@@ -36,7 +39,6 @@ class DatabaseManager():
     def isConnected(self):
         if self.db == None:
             return False
-        
         return self.db.open == 1
     
     def close(self):

@@ -2,6 +2,7 @@ from Logger import Logger
 from DirectoryDAO import DirectoryDAO
 from Directory import Directory
 import os
+from scipy.constants.constants import year
 
 class DirectoryManager():
     directory_dao = None
@@ -16,6 +17,9 @@ class DirectoryManager():
     # ADD DIRECTORY
     ##########################
     def addDirectory(self, type, name, directory):
+        if directory[-1:] != "/":
+            directory = directory + "/"
+            
         log_msg = "attempting to add %s '%s' with name '%s'" % (type.getDirectoryType(), directory, name)
         if name == None:
             name = directory
@@ -155,6 +159,24 @@ class DirectoryManager():
         return directories
     
     
+    def createDateDirectory(self, year, month, day, destination):
+        self.logger.debug("creating directory %s%s/%s/%s" % (destination, year, month, day))
+        root = destination
+
+        year = root + year
+        if not os.path.exists(year):
+            os.system("mkdir %s" % year)
+            self.logger.log("creating directory: '%s'" % year)
+
+        month = year + "/" + month
+        if not os.path.exists(month):
+            os.system("mkdir %s" % month)
+            self.logger.log("creating directory: '%s'" % month)
+            
+        day = month + "/" + day
+        if not os.path.exists(day):
+            os.system("mkdir %s" % day)
+            self.logger.log("creating directory: '%s'" % day)
     
     def directoriesToString(self, directories):
         ret_str = ""

@@ -10,13 +10,15 @@ class PhotoDAO(object):
         sql = "select hash from photos"
         res = self.database_manager.execute(sql, [])
         if len(res) == 0:
-            return None
-        res = res[0]    
+            return []   
         return res
     
-    def backupPhoto(self, file_name, hash, modified, source_id, destination_id):
-        print ("Filename" + file_name)
-        print ("HASH" + hash)
-        print ("MOD" + modified)
-        print ("SRC" + str(source_id))
-        print ("DEST" + str(destination_id))
+    def backupPhoto(self, file_name, sub_directory, hash, modified, source, destination):
+        # self.photo_dao.backupPhoto(file.getName(), sub_directory, file.getHash(), file.getModified(), source, destination)
+        sql = "insert into photos (file_name, sub_directory, hash, source, added, modified) values (%s, %s, %s, %s, now(), %s)" 
+        vals = (file_name, sub_directory, hash, source.getDirectoryId(), modified)
+        photo_id = self.database_manager.execute(sql, vals)
+        
+        sql = "insert into photo_map (photo_id, directory_id) values (%s, %s)"
+        vals = (photo_id, destination.getDirectoryId())
+        self.database_manager.execute(sql, vals)

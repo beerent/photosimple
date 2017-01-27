@@ -6,4 +6,8 @@ class PhotoManager(object):
         self.photo_dao = PhotoDAO(database_manager)
                  
     def getPhotoHashes(self):
-        return self.photo_dao.getPhotoHashes()
+        hashes = []
+        db_hashes = self.photo_dao.getPhotoHashes()
+        for hash in db_hashes:
+            hashes.append(hash[0])
+        return hashes

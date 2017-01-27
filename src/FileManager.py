@@ -20,7 +20,7 @@ class FileManager(object):
         file_list = []
         for file in files:
             filename = file.lower()
-            filepath = "%s/%s" % (path, filename)
+            filepath = "%s%s" % (path, filename)
             if "." not in filename or  filename[filename.rindex('.'):] not in self.accepted_extensions:
                 continue
             md5 = self.getMD5(filepath)
@@ -50,6 +50,7 @@ class FileManager(object):
         return sha1.hexdigest()
         
     def backupFile(self, source, destination):
+        self.logger.debug("backing up '%s' to destination '%s'"% (source, destination))
         copy2(source, destination)
         
         

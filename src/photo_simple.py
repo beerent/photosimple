@@ -3,6 +3,7 @@ from PropertiesManager import PropertiesManager
 from DatabaseManager import DatabaseManager
 from DirectoryType import DirectoryType
 from BackupManager import BackupManager
+from ModeType import ModeType
 from Logger import Logger
 import sys
 
@@ -13,17 +14,16 @@ import sys
 ###############################
 
 no_arg_parameters = [
-                    "-v",
-                    "--verbose",
-                    "-h",
-                    "--help"
+                    "-v", "--verbose",
+                    "-h", "--help"
+                    
                     ]
 
 arg_parameters = [
                  "-r", "--request",
                  "-d", "--directory",
                  "-n", "--name",
-                 "-t", "--tag"
+                 "-m", "--mode"
                  ]
 
 
@@ -32,13 +32,16 @@ valid_requests = [
                   "remove_destination",
                   "add_source",
                   "remove_source",
-                  "backup"
+                  "backup",
+                  "captured",
+                  "today"
                   ]
 
 #request fields
 request = None
 directory = None
 name = None
+mode = None
 tag = None
 
 #create logger option
@@ -62,11 +65,17 @@ logger = Logger()
 ###############################  
   
 def helpMenu():
-    ret_str =    "--verbose   (-v) verbose mode"
-    ret_str += "\n--request   (-r) <request> "
-    ret_str += "\n--source    (-s) <directory>"
-    ret_str += "\n--directory (-d) <directory>"
-    ret_str += "\n--name      (-n) <directory>"
+
+    ret_str = "--directory (-d) <directory>"
+    ret_str += "\n\n--name (-n) <directory>"   
+    ret_str += "\n\n--request (-r)\t\tthe type of request desired. available options listed below."
+    ret_str += "\n\n   add_destination\tadd a new destination to backup photos to."
+    ret_str += "\n\n   add_source\t\tadd a new directory to backup photos from."
+    ret_str += "\n\n   backup\t\tinitiate a backup request."
+    ret_str += "\n\n   remove_destination\tremove a backup location from photosimple. this does not delete the directory\n"
+    ret_str += "\t\t\tfrom the file system, but you will no longer backup photos to this directory"
+    ret_str += "\n\n   remove_source"
+    ret_str += "\n\n--verbose (-v)\t\tverbose mode"
     return ret_str
 
 
@@ -79,7 +88,7 @@ def helpMenu():
 
 def validateArguments():
     global valid_requests, no_arg_parameters, arg_parameters
-    global request, directory, name
+    global request, directory, name, mode
     
     #request flag is missing
     if request == None:
@@ -99,6 +108,11 @@ def validateArguments():
     
     if (request in ("add_destination", "add_source") and name == None):
         logger.warn("no name for destination '%s' provided" % directory)
+        
+    if request == "backup" and mode is not None:
+        if mode not in valid_requests:
+            return "invalid backup mode: %s" % mode
+        
     
     return None
 
@@ -117,7 +131,7 @@ def parseRequest():
     arguments = sys.argv
     verbose = False
 
-    global request, directory, name, tag
+    global request, directory, name, tag, mode
     
     i = 1
     while i < len(arguments):
@@ -175,6 +189,13 @@ def parseRequest():
             i = i + 1
             name = arg2
             continue
+
+        #name argument
+        elif (arg1 == "--mode" or arg1 == "-m") and mode == None:
+            arg2 = arguments[i]
+            i = i + 1
+            mode = arg2
+            continue
         
         #tag argument
         elif (arg1 == "--tag" or arg1 == "-t") and tag == None:
@@ -196,10 +217,11 @@ def parseRequest():
 ############################
      
 def handleRequest(database_manager):
-    global request, directory, name, tags
+    global request, directory, name, mode
     
     directory_manager = DirectoryManager(database_manager)
     backup_manager = BackupManager(database_manager)
+    
     if request == "add_destination":
         directory_manager.addDirectory(DirectoryType("DESTINATION"), name, directory)
     elif request == "remove_destination":
@@ -211,7 +233,9 @@ def handleRequest(database_manager):
         directory_manager.removeDirectory(DirectoryType("SOURCE"), name, directory)
         
     elif request == "backup":
-        backup_manager.backupPhotos()
+        if mode is not None:
+            mode = ModeType(mode)
+        backup_manager.backupPhotos(mode)
     else:
         logger.error("request type '%s' not found in handleRequest()" % request)
         exit(1)
