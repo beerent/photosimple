@@ -4,7 +4,7 @@ import time
 import hashlib
 from shutil import copy2
 
-from MD5File import MD5File
+from File import File
 from Logger import Logger
 
 class FileManager(object):
@@ -23,9 +23,9 @@ class FileManager(object):
             filepath = "%s%s" % (path, filename)
             if "." not in filename or  filename[filename.rindex('.'):] not in self.accepted_extensions:
                 continue
-            md5 = self.getMD5(filepath)
+            md5 = self.getHash(filepath)
             birth = self.getBirth(filepath)
-            file_list.append(MD5File(filename, filepath, birth, md5))
+            file_list.append(File(filename, filepath, birth, md5))
         self.logger.debug("%s files found in directory %s" % (str(len(file_list)), path))
         return file_list
     
@@ -34,8 +34,8 @@ class FileManager(object):
         datetime = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(epoch))
         return datetime
     
-    def getMD5(self, file_path):
-        self.logger.debug("generating md5 for file '%s'" % file_path)
+    def getHash(self, file_path):
+        self.logger.debug("generating hash for file '%s'" % file_path)
         BUF_SIZE = 65536  # lets read stuff in 64kb chunks!
         
         sha1 = hashlib.sha1()

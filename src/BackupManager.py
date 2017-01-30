@@ -17,9 +17,8 @@ class BackupManager(object):
         self.date_manager = DateManager()
         self.file_manager = FileManager()
         self.logger = Logger()
-            
+      
     def backupPhotos(self, mode):
-        #for every source, backup to every destination
         source_directories = self.directory_manager.getDirectories(DirectoryType("SOURCE"))
         destination_directories = self.directory_manager.getDirectories(DirectoryType("DESTINATION"))
         
@@ -107,5 +106,5 @@ class BackupManager(object):
             day = self.date_manager.getCreatedDay(modified_date)
         
         self.directory_manager.createDateDirectory(year, month, day, destination.getDirectoryPath())
-        sub_dir = year + "/" + month + "/" + day
+        sub_dir = year + "/" + month + "/" + day + "/"
         return sub_dir

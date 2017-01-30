@@ -52,6 +52,24 @@ class DirectoryDAO(object):
             return None
         return res
     
+    def getRootDirectory(self):
+        sql = "select * from directories where root = 1"
+        res = self.database_manager.execute(sql, [])
+        if len(res) == 0:
+            return None
+        res = res[0]
+        return Directory(res[0], res[1], res[2], res[3], res[4], res[5])
+    
+    def getSubDirectories(self):
+        sql = "select distinct sub_directory from photos"
+        res = self.database_manager.execute(sql, [])
+        if len(res) == 0:
+            return None
+        sub_directories = []
+        for result in res:
+            sub_directories.append(result[0])
+        return sub_directories
+    
     
     
     

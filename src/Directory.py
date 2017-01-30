@@ -6,11 +6,12 @@ class Directory(object):
     root = None
     
     
-    def __init__(self, directory_id, directory_name, directory_path, directory_type, root):
+    def __init__(self, directory_id, directory_name, directory_path, directory_type, active, root):
         self.directory_id = directory_id
         self.directory_name = directory_name
         self.directory_path = directory_path
         self.directory_type = directory_type
+        self.active = active
         self.root = root
          
     def getDirectoryId(self):
@@ -25,9 +26,12 @@ class Directory(object):
     def getDirectoryType(self):
         return self.directory_type
     
+    def isActive(self):
+        return self.active == "1"
+    
     def isRoot(self):
         return self.root == "1"
     
     def __str__(self):
-        ret_str = "[%s | %s | %s | %s | %s]" % (str(self.directory_id), self.directory_name, self.directory_path, self.directory_type, self.root)
+        ret_str = "[%s | %s | %s | %s | %s | %s]" % (str(self.directory_id), self.directory_name, self.directory_path, self.directory_type, self.active, self.root)
         return ret_str

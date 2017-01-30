@@ -3,6 +3,7 @@ from PropertiesManager import PropertiesManager
 from DatabaseManager import DatabaseManager
 from DirectoryType import DirectoryType
 from BackupManager import BackupManager
+from SyncManager import SyncManager
 from ModeType import ModeType
 from Logger import Logger
 import sys
@@ -33,9 +34,13 @@ valid_requests = [
                   "add_source",
                   "remove_source",
                   "backup",
-                  "captured",
-                  "today"
+                  "sync"
                   ]
+
+valid_modes = [
+               "captured",
+               "today"               
+               ]
 
 #request fields
 request = None
@@ -108,9 +113,13 @@ def validateArguments():
     
     if (request in ("add_destination", "add_source") and name == None):
         logger.warn("no name for destination '%s' provided" % directory)
+    
+    if request == "backup" and mode is None:
+        logger.error("missing mode type (-m, --mode)")
+        exit(1)
         
-    if request == "backup" and mode is not None:
-        if mode not in valid_requests:
+    if request == "backup":
+        if mode not in valid_modes:
             return "invalid backup mode: %s" % mode
         
     
@@ -221,21 +230,33 @@ def handleRequest(database_manager):
     
     directory_manager = DirectoryManager(database_manager)
     backup_manager = BackupManager(database_manager)
+    sync_manager = SyncManager(database_manager)
     
     if request == "add_destination":
+        logger.log("running 'add destination': %s: %s" % (directory, name))
         directory_manager.addDirectory(DirectoryType("DESTINATION"), name, directory)
     elif request == "remove_destination":
+        logger.log("running 'remove destination': %s: %s" % (directory, name))
         directory_manager.removeDirectory(DirectoryType("DESTINATION"), name, directory)
     
     elif request == "add_source":
         directory_manager.addDirectory(DirectoryType("SOURCE"), name, directory)
+        logger.log("running 'add source': %s: %s" % (directory, name))
     elif request == "remove_source":
         directory_manager.removeDirectory(DirectoryType("SOURCE"), name, directory)
-        
+        logger.log("running 'remove source': %s: %s" % (directory, name))
+
     elif request == "backup":
+        logger.log("running 'backup'")
         if mode is not None:
             mode = ModeType(mode)
         backup_manager.backupPhotos(mode)
+        sync_manager.syncDestinations()
+        
+    elif request == "sync":
+        logger.log("running 'sync'")
+        sync_manager.syncDestinations()
+        
     else:
         logger.error("request type '%s' not found in handleRequest()" % request)
         exit(1)

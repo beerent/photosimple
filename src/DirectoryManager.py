@@ -137,7 +137,7 @@ class DirectoryManager():
     # GET DIRECTORIES
     ##########################
     def getDirectories(self, type):
-        self.logger.log("attempting to get all %s directories" % type.getDirectoryType())
+        self.logger.debug("attempting to get all %s directories" % type.getDirectoryType())
             
         directory_objs = self.directory_dao.getDirectories(type.getDirectoryType())        
         if directory_objs == None:
@@ -145,11 +145,11 @@ class DirectoryManager():
             exit(1)
         
         #destination does exist
-        self.logger.log("%s directories successfully found." % type.getDirectoryType())
+        self.logger.debug("%s directories successfully found." % type.getDirectoryType())
         
         directories = []
         for directory_obj in directory_objs:
-            directories.append(Directory(directory_obj[0], directory_obj[1], directory_obj[2], directory_obj[3], directory_obj[4]))
+            directories.append(Directory(directory_obj[0], directory_obj[1], directory_obj[2], directory_obj[3], directory_obj[4], directory_obj[5]))
         
         for directory in directories:
             self.logger.log("%s: %s" % (type.getDirectoryType(), directory.getDirectoryPath()))
@@ -158,7 +158,34 @@ class DirectoryManager():
 
         return directories
     
+
+    ##########################
+    # GET ROOT DIRECTORY
+    ##########################
+    def getRootDirectory(self):
+        self.logger.debug("attempting to get root directory")
+        directory = self.directory_dao.getRootDirectory()
+        if directory == None:
+            self.logger.error("No root directory found, critical error.")
+            exit(1)
+        self.logger.debug("directory found: %s" % str(directory))
+        return directory
     
+    def getSubDirectories(self):
+        self.logger.debug("attempting to get all sub directories")
+        results = self.directory_dao.getSubDirectories()
+        
+        sub_directories = []
+        for result in results:
+            self.logger.debug("found subdirectory: %s" % result)
+            sub_directories.append(result)
+        
+        return sub_directories
+
+
+    ##########################
+    # CREATE DIRECTORY
+    ##########################    
     def createDateDirectory(self, year, month, day, destination):
         self.logger.debug("creating directory %s%s/%s/%s" % (destination, year, month, day))
         root = destination
@@ -177,6 +204,8 @@ class DirectoryManager():
         if not os.path.exists(day):
             os.system("mkdir %s" % day)
             self.logger.log("creating directory: '%s'" % day)
+    
+    
     
     def directoriesToString(self, directories):
         ret_str = ""

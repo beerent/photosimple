@@ -1,10 +1,10 @@
-class MD5File(object):
+class File(object):
     
-    def __init__(self, name, path, modified, md5):
+    def __init__(self, name, path, modified, hash):
         self.name = name
         self.path = path
         self.modified = modified
-        self.md5 = md5
+        self.hash = hash
          
     def getName(self):
         return self.name
@@ -16,4 +16,4 @@ class MD5File(object):
         return self.modified
     
     def getHash(self):
-        return self.md5
+        return self.hash

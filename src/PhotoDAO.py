@@ -22,3 +22,9 @@ class PhotoDAO(object):
         sql = "insert into photo_map (photo_id, directory_id) values (%s, %s)"
         vals = (photo_id, destination.getDirectoryId())
         self.database_manager.execute(sql, vals)
+        
+    def getPhotosInSubDirectory(self, dir):
+        sql = "select * from photos where sub_directory = %s"
+        vals = (dir,)
+        res = self.database_manager.execute(sql, vals)
+        return res
