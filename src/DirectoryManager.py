@@ -1,6 +1,7 @@
 from Logger import Logger
 from DirectoryType import DirectoryType
 from DirectoryDAO import DirectoryDAO
+from DateManager import DateManager
 from Directory import Directory
 import os
 from scipy.constants.constants import year
@@ -11,6 +12,8 @@ class DirectoryManager():
     def __init__(self, database_manager):
         self.logger = Logger()
         self.directory_dao = DirectoryDAO(database_manager)
+        self.date_manager = DateManager()
+        
         
         
         
@@ -208,6 +211,9 @@ class DirectoryManager():
         month = self.date_manager.getMonth()
         day = self.date_manager.getDay()
         self.createDateDirectory(year, month, day, destination)
+        sub_dir = year + "/" + month + "/" + day + "/"
+        return sub_dir
+    
     
     def createModifiedDirectory(self, file, destination):
         modified_date = file.getModified()
@@ -215,6 +221,9 @@ class DirectoryManager():
         month = self.date_manager.getCreatedMonth(modified_date)
         day = self.date_manager.getCreatedDay(modified_date)
         self.createDateDirectory(year, month, day, destination)   
+        sub_dir = year + "/" + month + "/" + day + "/"
+        return sub_dir
+    
                 
     def createDateDirectory(self, year, month, day, destination):
         destination_path = destination.getDirectoryPath()
@@ -235,9 +244,6 @@ class DirectoryManager():
         if not os.path.exists(day):
             os.system("mkdir %s" % day)
             self.logger.log("creating directory: '%s'" % day)
-            
-        sub_dir = year + "/" + month + "/" + day + "/"
-        return sub_dir
     
     def directoriesToString(self, directories):
         ret_str = ""

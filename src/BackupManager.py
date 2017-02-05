@@ -1,6 +1,5 @@
 from DirectoryManager import DirectoryManager
 from PhotoManager import PhotoManager
-from DateManager import DateManager
 from FileManager import FileManager
 from PhotoDAO import PhotoDAO
 from Logger import Logger
@@ -11,7 +10,6 @@ class BackupManager(object):
         self.directory_manager = DirectoryManager(database_manager)
         self.photo_manager = PhotoManager(database_manager)
         self.photo_dao = PhotoDAO(database_manager)
-        self.date_manager = DateManager()
         self.file_manager = FileManager()
         self.logger = Logger()
         
@@ -61,5 +59,6 @@ class BackupManager(object):
             exit(1)
             
         full_dir = destination.getDirectoryPath() + sub_dir
-        self.file_manager.backupFile(file.getPath(), full_dir)
-        self.photo_dao.backupPhoto(file.getName(), sub_dir, file.getHash(), file.getModified(), source, destination)
+        new_file_name = file.getHash() + ".jpg"
+        self.file_manager.copyFile(file.getPath(), full_dir + new_file_name)
+        self.photo_dao.backupPhoto(new_file_name, sub_dir, file.getHash(), file.getModified(), source, destination)

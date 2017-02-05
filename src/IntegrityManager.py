@@ -27,7 +27,7 @@ class IntegrityManager(object):
             database_files = self.photo_manager.getPhotosInSubDirectory(dir)
             filesystem_files = self.file_manager.getFiles(full_path)
             
-            result = self.compareFiles(database_files, filesystem_files)
+            result = self.compareFiles(database_files, filesystem_files, dir)
             if not result:
                 return result
         return True
@@ -35,7 +35,7 @@ class IntegrityManager(object):
     
     
 
-    def compareFiles(self, database_files, filesystem_files):
+    def compareFiles(self, database_files, filesystem_files, dir):
         database_files_count = len(database_files)
         filesystem_files_count = len(filesystem_files)
         if database_files_count != filesystem_files_count:
