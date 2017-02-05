@@ -250,7 +250,7 @@ def handleRequest(database_manager):
         logger.log("running 'backup'")
         if mode is not None:
             mode = ModeType(mode)
-        backup_manager.backupPhotos(mode)
+        backup_manager.startPhotoBackup(mode)
         sync_manager.syncDestinations()
         
     elif request == "sync":

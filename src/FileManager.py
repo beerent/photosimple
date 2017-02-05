@@ -21,12 +21,14 @@ class FileManager(object):
         for file in files:
             filename = file.lower()
             filepath = "%s%s" % (path, filename)
-            if "." not in filename or  filename[filename.rindex('.'):] not in self.accepted_extensions:
+            if "." not in filename or filename[filename.rindex('.'):] not in self.accepted_extensions:
+                self.logger.debug("skipping file '%s'" % filename)
                 continue
-            md5 = self.getHash(filepath)
+            
+            hash = self.getHash(filepath)
             birth = self.getBirth(filepath)
-            file_list.append(File(filename, filepath, birth, md5))
-        self.logger.debug("%s files found in directory %s" % (str(len(file_list)), path))
+            file_list.append(File(filename, filepath, birth, hash))
+        self.logger.debug("%s accepted files found in directory %s" % (str(len(file_list)), path))
         return file_list
     
     def getBirth(self, file_path):
@@ -49,10 +51,6 @@ class FileManager(object):
         self.logger.debug("SHA1 for file '%s': %s" % (file_path, sha1.hexdigest()))
         return sha1.hexdigest()
         
-    def backupFile(self, source, destination):
-        self.logger.debug("backing up '%s' to destination '%s'"% (source, destination))
-        copy2(source, destination)
-        
-        
-            
-            
+    def copyFile(self, source, destination):
+        self.logger.debug("copying file '%s' to destination '%s'"% (source, destination))
+        copy2(source, destination)   

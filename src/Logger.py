@@ -25,6 +25,15 @@ class Logger(object):
     def isVerbose(self):
         return self.verbose
     
+    def head(self, msg):
+        self.log("")
+        self.log("")
+        self.log("################################################################")
+        self.log("# %s" % msg)
+        self.log("################################################################")
+        self.log("")
+        self.log("")
+        
     def debug(self, log):
         string = "%s [debug] %s" % (self.getDateTime(), log)
         if self.isVerbose():
