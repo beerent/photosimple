@@ -21,14 +21,14 @@ class SyncManager(object):
         self.logger.log("root directory obtained")
         
         # validate root directory's integrity
-        self.logger.log("validating health on root directory '%s'" % root_dir.getDirectoryPath())
+        #self.logger.debug("validating health on root directory '%s'" % root_dir.getDirectoryPath())
         healthy = self.integrity_manager.destinationIsHealthy(root_dir)
         self.logger.log("root directory is healthy: %s" % str(healthy))
         if not healthy:
             exit(1)
         
         # if destination is healthy, rsync w/ every other directory
-        destinations = self.directory_manager.getDirectories(DirectoryType("DESTINATION"))
+        destinations = self.directory_manager.getAllDirectories(DirectoryType("DESTINATION"))
         for destination in destinations:
             if not destination.isRoot():
                 if not self.directory_manager.directoryExists(destination.getDirectoryPath()):

@@ -1,11 +1,15 @@
-import MySQLdb
-from Logger import Logger
 from PropertiesManager import PropertiesManager
+from warnings import filterwarnings
+from Logger import Logger
+import MySQLdb
+
 
 class DatabaseManager():
     db = None
     
     def __init__(self, host, username, password, database):
+        filterwarnings('ignore', category = MySQLdb.Warning)
+        
         self.host = host
         self.username = username
         self.password = password
