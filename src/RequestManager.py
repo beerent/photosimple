@@ -81,13 +81,11 @@ class RequestManager():
         self.parseRequest(arguments)
         request_results = self.validateArguments()
         if request_results is not None:
-            logger.error(request_results)
+            self.logger.error(request_results)
             exit(1)
         
         database_manager = self.getDatabaseManager()
-        self.logger.debug("database connected pre request: %s" % str(database_manager.isConnected()))
         self.handleRequest(database_manager)
-        self.logger.debug("database connected post request: %s" % str(database_manager.isConnected()))
         database_manager.close()
 
 
@@ -121,14 +119,14 @@ class RequestManager():
             
             #help argument
             if arg1 == "-h" or arg1 == "--help":
-                print helpMenu()
+                print self.helpMenu()
                 exit(0)
             
             #verify state of request parsing
             if i + 1 == len(arguments):
                 if arg1 in self.arg_parameters:
                     err_str = "missing argument for request '%s'." % arg1
-                elif arg1 in self.no_self.arg_parameters:
+                elif arg1 in self.arg_parameters:
                     err_str = "code doesn't account for parameter '%s'" % arg1
                 else:
                     err_str = "invalid argument '%s'." % arg1
@@ -337,35 +335,38 @@ class RequestManager():
         
         
         if self.request == "add_destination":
-            self.logger.log("running 'add destination': %s: %s" % (self.directory, self.name))
-            directory_manager.addDirectory(DirectoryType("DESTINATION"), self.name, self.directory)
-        
+            self.logger.log("running 'add destination' | directory: %s | name : %s" % (self.directory, self.name))
+            directory_result = directory_manager.addDirectoryRequest(DirectoryType("DESTINATION"), self.name, self.directory)
+            
         elif self.request == "remove_destination":
             self.logger.log("running 'remove destination': %s: %s" % (self.directory, self.name))
-            directory_manager.removeDirectory(DirectoryType("DESTINATION"), self.name, self.directory)
-        
+            directory_result = directory_manager.removeDirectoryRequest(DirectoryType("DESTINATION"), self.name, self.directory)
+            
         elif self.request == "add_source":
-            directory_manager.addDirectory(DirectoryType("SOURCE"), self.name, self.directory)
             self.logger.log("running 'add source': %s: %s" % (self.directory, self.name))
+            directory_result = directory_manager.addDirectoryRequest(DirectoryType("SOURCE"), self.name, self.directory)
         
         elif self.request == "remove_source":
-            directory_manager.removeDirectory(DirectoryType("SOURCE"), self.name, self.directory)
             self.logger.log("running 'remove source': %s: %s" % (self.directory, self.name))
+            directory_result = directory_manager.removeDirectoryRequest(DirectoryType("SOURCE"), self.name, self.directory)
     
         elif self.request == "backup":
             self.logger.log("running 'backup'")
             if self.mode is not None:
                 self.mode = ModeType(self.mode)
-            backup_manager.startPhotoBackup(self.mode)
-            sync_manager.syncDestinations()
+            backup_result = backup_manager.photoBackupRequest(self.mode)
             
         elif self.request == "sync":
             self.logger.log("running 'sync'")
-            sync_manager.syncDestinations()
+            sync_result = sync_manager.syncDestinationsRequest(self.name, self.directory)
+            destinations = sync_result.getDestinations()                
         
         elif self.request == "health_check":
             self.logger.log("running 'health check'")
-            integrity_manager.runHealthChecker(self.directory, self.name)
+            health_result = integrity_manager.healthCheckerRequest(self.directory, self.name)
+            for x in health_result.getHealthCheckDestinationResults():
+                if not x.isSuccessful():
+                    print x.getDestination().getName()
         
         elif self.request == 'cherry_pick':
             self.logger.log("running 'cherry pick'")

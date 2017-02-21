@@ -29,6 +29,7 @@ class DatabaseManager():
         return cursor.fetchall()
     
     def connect(self, local_call=False):
+        self.logger.debug("connecting to database...")
         if not local_call:
             self.logger.warn("DatabaseManager.connected() may be called by outside object.")
         self.logger.debug("attempting to open database connection...")

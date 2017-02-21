@@ -14,16 +14,16 @@ class Directory(object):
         self.active = active
         self.root = root
          
-    def getDirectoryId(self):
+    def getId(self):
         return self.directory_id
         
-    def getDirectoryName(self):
+    def getName(self):
         return self.directory_name
     
-    def getDirectoryPath(self):
+    def getPath(self):
         return self.directory_path
     
-    def getDirectoryType(self):
+    def getType(self):
         return self.directory_type
     
     def isActive(self):
