@@ -364,13 +364,10 @@ class RequestManager():
         elif self.request == "health_check":
             self.logger.log("running 'health check'")
             health_result = integrity_manager.healthCheckerRequest(self.directory, self.name)
-            for x in health_result.getHealthCheckDestinationResults():
-                if not x.isSuccessful():
-                    print x.getDestination().getName()
         
         elif self.request == 'cherry_pick':
             self.logger.log("running 'cherry pick'")
-            query_manager.queryPhotos(self.added_from, self.added, self.added_to, \
+            query_result = query_manager.queryPhotos(self.added_from, self.added, self.added_to, \
                                       self.modified_from, self.modified, self.modified_to)
             
             

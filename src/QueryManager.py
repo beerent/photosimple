@@ -1,3 +1,4 @@
+from QueryResult import QueryResult
 from QueryDAO import QueryDAO
 from Logger import Logger
 from Photo import Photo
@@ -7,6 +8,9 @@ class QueryManager():
     def __init__(self, database_manager):
         self.query_dao = QueryDAO(database_manager)
         self.logger = Logger()
+        
+    def queryPhotosRequest(self, added_from, added, added_to, modified_from, modified, modified_to):
+        return None
     
     def queryPhotos(self, added_from, added, added_to, modified_from, modified, modified_to):
         self.logger.debug("collecting photos with the following conditions:")
@@ -29,19 +33,20 @@ class QueryManager():
         
         if results == None:
             self.logger.log("0 photos collected")
-            return photos
-            
-        for result in results:
-            id = result[0]
-            filename = result[1]
-            sub_dir = result[2]
-            hash = result[3]
-            source = result[4]
-            added = result[5]
-            modified = result[6]
-            photo = Photo(id, filename, sub_dir, hash, source, added, modified)
-            photos.append(photo)
-        self.logger.log("%s photos collected" % str(len(photos)))
-        return photos
+
+        else:
+            for result in results:
+                id = result[0]
+                filename = result[1]
+                sub_dir = result[2]
+                hash = result[3]
+                source = result[4]
+                added = result[5]
+                modified = result[6]
+                photo = Photo(id, filename, sub_dir, hash, source, added, modified)
+                photos.append(photo)
+            self.logger.debug("%s photos collected" % str(len(photos)))
+
+        return QueryResult(photos, True, None)
    
         
