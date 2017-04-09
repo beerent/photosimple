@@ -19,43 +19,63 @@ class BackupManager(object):
         self.logger = Logger()
         
         
-      
+    # accepts: ModeType "mode"
+    # returns:BackupResult
+    
+    # Logic:
+    # function initiates a backup request. 
     def photoBackupRequest(self, mode):
-        
         backup_source_directories = None
+        request = "backup"
         successful = False
         error = None
         
-        ###
-        ### change to get all directories and create an error if a source cannot be accessed
-        ### or not. debate if this is an "error". consider I just want to backup my one SD card, not all
-        ###
+        # get all source directories
+        # return error if none are accessible.
         present_source_directories = self.directory_manager.getAllDirectories(DirectoryType("SOURCE"))
         if len(present_source_directories) == 0:
             err_str = "no source directory found, cannot continue with backup."
             self.logger.error(err_str)
-            return err_str
+            error = Error(request, err_str)
+            return BackupRequest(None, successful, error)
             
+        
+        # get root directory
+        # return error if not accessible.
         present_root_destination = self.directory_manager.getRootDirectory()       
         if present_root_destination == None:
             err_str = "root destination not found, cannot continue with backup."
             self.logger.error(err_str)
-            return err_str
+            error = Error(request, err_str)
+            return BackupRequest(None, successful, error)
         
-        database_file_hashes = self.photo_manager.getPhotoHashes()
-        result = self.backupPhotos(present_source_directories, present_root_destination, database_file_hashes, mode)
+        result = self.backupPhotos(present_source_directories, present_root_destination, mode)
         
         is_string = isinstance(result, (str, unicode))
         if is_string:
-            request = "backup"
+            self.logger.error(result)
             error = Error(request, result)
             return BackupResult(None, successful, error)
         
         successful = True
+        
+        #should kick off sync here.
+        
         return BackupResult(result, successful, None)
 
-    def backupPhotos(self, present_source_directories, present_root_destination, database_file_hashes, mode):
+    
+    #accepts: - list of present source directories
+    #         - present root destination directory
+    #         - mode type: specifying if we're storing by added or created date
+    #
+    #returns: a list of source directories that were accessed during the backup.
+    #
+    #logic:
+    # backs up all new photos from all present source directories to a root destination.
+    def backupPhotos(self, present_source_directories, present_root_destination, mode):
         self.logger.head("STARTING SOURCE BACKUP")
+        
+        database_file_hashes = self.photo_manager.getPhotoHashes()
         backup_source_directories = []
         
         for source in present_source_directories:
@@ -83,7 +103,7 @@ class BackupManager(object):
                             break
                                             
                         database_file_hashes.append(file.getHash())
-                        backed_up = total_backed_up + 1
+                        backed_up = backed_up + 1
 
                 successful = True
                         
@@ -91,8 +111,20 @@ class BackupManager(object):
             backup_source_directories.append(backup_source_directory_result)
         self.logger.log("backup complete.")
         return backup_source_directories
-        
-    #Backs up a single photo to a desired destination
+     
+    #accepts: 
+    #  - a file
+    #  - source directory
+    #  - destination directory
+    #  - mode type
+    #
+    #returns:
+    #  - returns True if successful
+    #  - returns a string error message if fails   
+    #
+    #logic:
+    # backs up a single photo to a desired destination. 
+    # also stores the successful result in database.
     def backupPhoto(self, file, source, destination, mode):
         if mode.getModeType() == "TODAY":
             sub_dir = self.directory_manager.createTodaysDirectory(file, destination)
@@ -104,7 +136,7 @@ class BackupManager(object):
             return err_msg
             
             
-        full_dir = destination.getDirectoryPath() + sub_dir
+        full_dir = destination.getPath() + sub_dir
         new_file_name = file.getHash() + ".jpg"
         self.file_manager.copyFile(file.getPath(), full_dir + new_file_name)
         self.photo_dao.backupPhoto(new_file_name, sub_dir, file.getHash(), file.getModified(), source, destination)

@@ -8,7 +8,7 @@ from File import File
 from Logger import Logger
 
 class FileManager(object):
-    accepted_extensions = [".jpg"]
+    accepted_extensions = [".jpg", ".png"]
     
     def __init__(self):
         self.none = None

@@ -67,9 +67,6 @@ class DirectoryManager():
         return DirectoryResult(directory_obj, error, successful)
             
     
-    def directoryResultToJSON(self, directory_result):
-        return None
-    
     def directoryToJSON(self, directory):
         contents = self.json_manager.createJSONRoot()
         contents = self.json_manager.addElement(contents, "id", directory.getId())
@@ -88,8 +85,16 @@ class DirectoryManager():
     ##########################
     # ADD DIRECTORY
     ##########################
+    #
+    #accepts: 
+    #  - directory type
+    #  - name of directory
+    #  - path of directory
+    #
+    #returns:
+    #  - a string if request fails
+    #  - a directory object if it's successful
     
-    #returns a string if request fails, or a directory object if it's successful
     def addDirectory(self, type, name, directory):
         
         #ensure directory has a trailing '/'
@@ -311,7 +316,7 @@ class DirectoryManager():
     
                 
     def createDateDirectory(self, year, month, day, destination):
-        destination_path = destination.getDirectoryPath()
+        destination_path = destination.getPath()
         self.logger.debug("creating directory %s%s/%s/%s" % (destination_path, year, month, day))
         root = destination_path
 

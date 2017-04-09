@@ -18,18 +18,15 @@ class IntegrityManager(object):
     def healthCheckerRequest(self, directory, name):
         successful = False
         results = self.healthChecker(directory, name)
-        error = None
-
-        is_string = isinstance(results, (str, unicode))
-        if is_string:
-            request = "health check"
-            error = Error(request, result)
-            results = None
-        else:
-            successful = True
         
-        health_check_result = HealthCheckResult(results, successful, error)
-        return health_check_result
+        for result in results:
+            if not result.isHealthy():
+                return HealthCheckResult(results, successful, result.getError())
+        
+        successful = True
+        error = None
+        
+        return HealthCheckResult(results, successful, error)
         
     
     def healthChecker(self, directory, name):
@@ -82,15 +79,18 @@ class IntegrityManager(object):
                 err_str = "directory '%s' is not accessible" % sub_dir
                 error = Error('health check', err_str)
                 self.logger.error(err_str)
-                return HealthCheckDestinationResult(directory, healthy, missing_photos, extra_photos, successful, error)
+                return HealthCheckDestinationResult(sub_dir, healthy, missing_photos, extra_photos, successful, error)
             
             database_files = self.photo_manager.getPhotosInSubDirectory(sub_dir)
             filesystem_files = self.file_manager.getFiles(full_path)
             
             missing_sub_photos = self.getMissingPhotos(database_files, filesystem_files)
             extra_sub_photos   = self.getExtraPhotos(database_files, filesystem_files)
-            missing_photos = missing_photos + missing_sub_photos
-            extra_photos   = extra_photos + extra_sub_photos
+            missing_photos.extend(missing_sub_photos)
+            extra_photos.extend(extra_sub_photos)
+        
+        for photo in missing_photos:
+            print photo.getSubDirectory() + " " + photo.getHash() + " " + photo.getName()
         healthy = len(missing_photos) == 0 and len(extra_photos) == 0
         successful = True
             
@@ -107,6 +107,7 @@ class IntegrityManager(object):
 
         for database_file in database_files:
             if database_file.getHash() not in filesystem_hashes:
+                print database_file.getHash()
                 missing_photos.append(database_file)
                 
         return missing_photos

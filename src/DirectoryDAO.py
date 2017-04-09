@@ -9,6 +9,8 @@ class DirectoryDAO(object):
     # Get Directory
     ################################
     
+    # determines if name or directory are None, and 
+    # calls the appropriate function based on that
     def getDirectory(self, type, name, directory):
         if name != None and directory != None:
             return self.getDirectoryByPathAndName(type, directory, name)
@@ -17,6 +19,7 @@ class DirectoryDAO(object):
         elif name != None and directory == None:
             return self.getDirectoryByName(type, name)
         
+    #returns a Directory object based on directory type and name
     def getDirectoryByName(self, type, name):
         sql = "select * from directories where directory_type = %s and directory_name = %s and active = '1'"
         vars = (type, name)
@@ -26,6 +29,7 @@ class DirectoryDAO(object):
         res = res[0]
         return Directory(res[0], res[1], res[2], res[3], res[4], res[5])
     
+    #returns a Directory object based on type and path
     def getDirectoryByPath(self, type, directory):
         sql = "select * from directories where directory_type = %s and directory_path = %s and active = '1'"
         vars = (type, directory)
@@ -35,6 +39,7 @@ class DirectoryDAO(object):
         res = res[0]
         return Directory(res[0], res[1], res[2], res[3], res[4], res[5])
     
+    #returns a Directory based on type, path and name
     def getDirectoryByPathAndName(self, type, directory, name):
         sql = "select * from directories where directory_type = %s and directory_path = %s and directory_name = %s and active = '1'"
         vars = (type, directory, name)
@@ -44,6 +49,7 @@ class DirectoryDAO(object):
         res = res[0]
         return Directory(res[0], res[1], res[2], res[3], res[4], res[5])
     
+    #returns all active directories based on type
     def getDirectories(self, type):
         sql = "select * from directories where directory_type = %s and active = '1'"
         vars = (type,)
@@ -52,6 +58,7 @@ class DirectoryDAO(object):
             return None
         return res
     
+    #returns the root directory
     def getRootDirectory(self):
         sql = "select * from directories where root = 1"
         res = self.database_manager.execute(sql, [])
@@ -60,6 +67,7 @@ class DirectoryDAO(object):
         res = res[0]
         return Directory(res[0], res[1], res[2], res[3], res[4], res[5])
     
+    #returns all sub directories as strings
     def getSubDirectories(self):
         sql = "select distinct sub_directory from photos"
         res = self.database_manager.execute(sql, [])

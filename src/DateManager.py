@@ -1,8 +1,7 @@
 import time
 
 class DateManager(object):
-    
-#    def __init__(self):    
+        
     def getDate(self):
         return time.strftime("%Y/%m/%d")
     

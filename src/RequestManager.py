@@ -263,6 +263,8 @@ class RequestManager():
         ret_str += "\n\n   add_destination\t<-d> [-n]\tadd a new destination to backup photos to."
         ret_str += "\n\n   add_source\t\t<-d> [-n]\tadd a new directory to backup photos from."
         ret_str += "\n\n   backup\t\t<> []\t\tinitiate a backup request."
+        ret_str += "\n\n   cherry_pick\t\t<> [...]\tquery for a set of photos."
+        ret_str += "\n\n       [--added_from, --added, --added_to, --modified_from, --modified, --modified_to]"
         ret_str += "\n\n   heath_check\t\t<> [-d, -n]\tcheck the heath of one or all destinations."
         ret_str += "\n\n   remove_destination\t<> [-d, -n]\tremove a backup location from photosimple. this does not delete the directory\n"
         ret_str += "\t\t\t\t\tfrom the file system, but you will no longer backup photos to this directory"
@@ -333,41 +335,41 @@ class RequestManager():
         sync_manager = SyncManager(database_manager)
         
         
-        
+        result = None
         if self.request == "add_destination":
             self.logger.log("running 'add destination' | directory: %s | name : %s" % (self.directory, self.name))
-            directory_result = directory_manager.addDirectoryRequest(DirectoryType("DESTINATION"), self.name, self.directory)
+            result = directory_manager.addDirectoryRequest(DirectoryType("DESTINATION"), self.name, self.directory)
             
         elif self.request == "remove_destination":
             self.logger.log("running 'remove destination': %s: %s" % (self.directory, self.name))
-            directory_result = directory_manager.removeDirectoryRequest(DirectoryType("DESTINATION"), self.name, self.directory)
+            result = directory_manager.removeDirectoryRequest(DirectoryType("DESTINATION"), self.name, self.directory)
             
         elif self.request == "add_source":
             self.logger.log("running 'add source': %s: %s" % (self.directory, self.name))
-            directory_result = directory_manager.addDirectoryRequest(DirectoryType("SOURCE"), self.name, self.directory)
+            result = directory_manager.addDirectoryRequest(DirectoryType("SOURCE"), self.name, self.directory)
         
         elif self.request == "remove_source":
             self.logger.log("running 'remove source': %s: %s" % (self.directory, self.name))
-            directory_result = directory_manager.removeDirectoryRequest(DirectoryType("SOURCE"), self.name, self.directory)
+            result = directory_manager.removeDirectoryRequest(DirectoryType("SOURCE"), self.name, self.directory)
     
         elif self.request == "backup":
             self.logger.log("running 'backup'")
             if self.mode is not None:
                 self.mode = ModeType(self.mode)
-            backup_result = backup_manager.photoBackupRequest(self.mode)
+            result = backup_manager.photoBackupRequest(self.mode)
             
         elif self.request == "sync":
             self.logger.log("running 'sync'")
-            sync_result = sync_manager.syncDestinationsRequest(self.name, self.directory)
-            destinations = sync_result.getDestinations()                
+            result = sync_manager.syncDestinationsRequest(self.name, self.directory)
+            destinations = result.getDestinations()                
         
         elif self.request == "health_check":
             self.logger.log("running 'health check'")
-            health_result = integrity_manager.healthCheckerRequest(self.directory, self.name)
+            result = integrity_manager.healthCheckerRequest(self.directory, self.name)
         
         elif self.request == 'cherry_pick':
             self.logger.log("running 'cherry pick'")
-            query_result = query_manager.queryPhotos(self.added_from, self.added, self.added_to, \
+            result = query_manager.queryPhotos(self.added_from, self.added, self.added_to, \
                                       self.modified_from, self.modified, self.modified_to)
             
             
@@ -376,7 +378,8 @@ class RequestManager():
         else:
             self.logger.error("request type '%s' not found in handleRequest()" % self.request)
             exit(1)
-    
+        
+        print "request successful: %s" % str(result.isSuccessful())
         
         
         
