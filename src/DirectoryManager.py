@@ -1,3 +1,4 @@
+from ListDirectoriesResult import ListDirectoriesResult
 from DirectoryResult import DirectoryResult
 from DirectoryType import DirectoryType
 from DirectoryDAO import DirectoryDAO
@@ -65,7 +66,24 @@ class DirectoryManager():
             successful = True
             
         return DirectoryResult(directory_obj, error, successful)
+    
+    def listDirectoriesRequest(self, type):
+        directories = None
+        error = None
+        successful = False
+        
+        result = self.getAllDirectories(type)
+        
+        is_string = isinstance(result, (str, unicode))
+        if is_string:
+            request = "list directories"
+            error = Error(request, result)
             
+        else:
+            directories = result
+            successful = True
+            
+        return ListDirectoriesResult(directories, error, successful)                    
     
     def directoryToJSON(self, directory):
         contents = self.json_manager.createJSONRoot()

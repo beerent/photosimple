@@ -40,8 +40,10 @@ class RequestManager():
     valid_requests = [
                       "add_destination",
                       "remove_destination",
+                      "list_destinations",
                       "add_source",
                       "remove_source",
+                      "list_sources",
                       "backup",
                       "sync",
                       "health_check",
@@ -85,8 +87,9 @@ class RequestManager():
             exit(1)
         
         database_manager = self.getDatabaseManager()
-        self.handleRequest(database_manager)
+        result = self.handleRequest(database_manager)
         database_manager.close()
+        return result
 
 
 
@@ -343,6 +346,10 @@ class RequestManager():
         elif self.request == "remove_destination":
             self.logger.log("running 'remove destination': %s: %s" % (self.directory, self.name))
             result = directory_manager.removeDirectoryRequest(DirectoryType("DESTINATION"), self.name, self.directory)
+        
+        elif self.request == "list_destinations":
+            self.logger.log("running 'list destinations'")
+            result = directory_manager.listDirectoriesRequest(DirectoryType("DESTINATION"))
             
         elif self.request == "add_source":
             self.logger.log("running 'add source': %s: %s" % (self.directory, self.name))
@@ -351,6 +358,10 @@ class RequestManager():
         elif self.request == "remove_source":
             self.logger.log("running 'remove source': %s: %s" % (self.directory, self.name))
             result = directory_manager.removeDirectoryRequest(DirectoryType("SOURCE"), self.name, self.directory)
+        
+        elif self.request == "list_sources":
+            self.logger.log("running 'list sources'")
+            result = directory_manager.listDirectoriesRequest(DirectoryType("SOURCE"))
     
         elif self.request == "backup":
             self.logger.log("running 'backup'")
@@ -379,6 +390,7 @@ class RequestManager():
             self.logger.error("request type '%s' not found in handleRequest()" % self.request)
             exit(1)
         
+        return result
         print "request successful: %s" % str(result.isSuccessful())
         
         
