@@ -1,4 +1,0 @@
-#!/bin/sh
-
-python /Users/brentryczak/Documents/code/photosimple/src/photo_simple.py $@
-rm /Users/brentryczak/Documents/code/photosimple/src/*.pyc
