@@ -1,7 +1,8 @@
 from PropertiesManager import PropertiesManager
 from warnings import filterwarnings
 from Logger import Logger
-import MySQLdb
+import pymysql
+pymysql.install_as_MySQLdb()
 
 
 class DatabaseManager():

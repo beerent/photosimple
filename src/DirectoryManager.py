@@ -37,7 +37,7 @@ class DirectoryManager():
         result = self.addDirectory(type, name, directory)
 
         #if string (and not directory object), set error
-        is_string = isinstance(result, (str, unicode))
+        is_string = isinstance(result, str)
         if is_string:
             request = "add directory"            
             error = Error(request, result)
@@ -56,7 +56,7 @@ class DirectoryManager():
         result = self.removeDirectory(type, name, directory)
         
         #if string (and not directory object), set error
-        is_string = isinstance(result, (str, unicode))
+        is_string = isinstance(result, str)
         if is_string:
             request = "remove directory"            
             error = Error(request, result)
@@ -74,7 +74,7 @@ class DirectoryManager():
         
         result = self.getAllDirectories(type)
         
-        is_string = isinstance(result, (str, unicode))
+        is_string = isinstance(result, str)
         if is_string:
             request = "list directories"
             error = Error(request, result)

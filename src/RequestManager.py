@@ -122,7 +122,7 @@ class RequestManager():
             
             #help argument
             if arg1 == "-h" or arg1 == "--help":
-                print self.helpMenu()
+                print(self.helpMenu())
                 exit(0)
             
             #verify state of request parsing
@@ -391,7 +391,7 @@ class RequestManager():
             exit(1)
         
         return result
-        print "request successful: %s" % str(result.isSuccessful())
+        print("request successful: %s" % str(result.isSuccessful()))
         
         
         

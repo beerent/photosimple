@@ -21,7 +21,7 @@ class SyncManager(object):
         
         synced_destinations = self.syncDestinations(name, directory)
 
-        is_string = isinstance(synced_destinations, (str, unicode))
+        is_string = isinstance(synced_destinations, str)
         if is_string:
             request = "sync"
             error = Error(request, synced_destinations)

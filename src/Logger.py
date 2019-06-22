@@ -59,7 +59,7 @@ class Logger(object):
         self.storeLog(string)
         
     def printLog(self, string):
-        print string
+        print(string)
         
     def storeLog(self, string):
         log_directory = self.log_directory + "/photosimple.log"

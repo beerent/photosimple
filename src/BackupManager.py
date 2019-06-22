@@ -51,7 +51,7 @@ class BackupManager(object):
         
         result = self.backupPhotos(present_source_directories, present_root_destination, mode)
         
-        is_string = isinstance(result, (str, unicode))
+        is_string = isinstance(result, str)
         if is_string:
             self.logger.error(result)
             error = Error(request, result)
@@ -97,7 +97,7 @@ class BackupManager(object):
                         backup_photo_result = self.backupPhoto(file, source, present_root_destination, mode)
                         
                         #if string, an error occurred. associate error with source directory, and break loop
-                        is_string = isinstance(backup_photo_result, (str, unicode))
+                        is_string = isinstance(backup_photo_result, str)
                         if is_string:
                             error = Error("backup", backup_photo_result)
                             break

@@ -90,7 +90,7 @@ class IntegrityManager(object):
             extra_photos.extend(extra_sub_photos)
         
         for photo in missing_photos:
-            print photo.getSubDirectory() + " " + photo.getHash() + " " + photo.getName()
+            print(photo.getSubDirectory() + " " + photo.getHash() + " " + photo.getName())
         healthy = len(missing_photos) == 0 and len(extra_photos) == 0
         successful = True
             
@@ -107,7 +107,7 @@ class IntegrityManager(object):
 
         for database_file in database_files:
             if database_file.getHash() not in filesystem_hashes:
-                print database_file.getHash()
+                print(database_file.getHash())
                 missing_photos.append(database_file)
                 
         return missing_photos
